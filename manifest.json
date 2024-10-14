@@ -1,0 +1,15 @@
+{
+  "$schema": "URL_ADDRESS",
+  "manifest_version": 3,
+  "name": "video Control",
+  "version": "1.0.0",
+  "action": { "default_popup": "index.html" },
+  "permissions": ["activeTab", "storage"],
+  "content_scripts": [
+    {
+      "js": ["src/content.jsx"],
+      "matches": ["https://youtube.com/*"],
+      "run_at": "document_end"
+    }
+  ]
+}
