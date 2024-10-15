@@ -2,17 +2,48 @@ import { useEffect, useState } from 'react';
 import './App.css';
 import { VideoConfig } from './types';
 import { getValueFromStorage, setValueFromStorage } from './utils';
-import { StorageMap, VideoDefaultControlConfig } from './types/constant';
+import { VideoDefaultControlConfig } from './types/constant';
 
 function App() {
   const [videoConfig, setVideoConfig] = useState<VideoConfig>({});
+  const [location, setLocation] = useState<Pick<Location, 'hostname'>>();
   const [loaded, setLoaded] = useState(false);
 
   useEffect(() => {
-    getValueFromStorage(StorageMap.videoConfig, (s) => {
-      setVideoConfig(Object.assign({}, VideoDefaultControlConfig, s));
-      setLoaded(true);
+    chrome.tabs.query({ active: true, currentWindow: true }, (tabs) => {
+      if (tabs.length) {
+        const tab = tabs[0];
+        if (tab.url) {
+          const loc = new URL(tab.url);
+          setLocation({
+            hostname: loc.host,
+          });
+          getValueFromStorage([loc.hostname], (s) => {
+            setVideoConfig(Object.assign({}, VideoDefaultControlConfig, s[loc.hostname]||{}));
+            setLoaded(true);
+          });
+        }else{
+          setLoaded(true);
+          setLocation({
+            hostname: 'normal',
+          })
+        }
+      }
     });
+    // chrome.runtime.sendMessage({ type: 'getLocation' }).then((loc) => {
+    //   if (loc) {
+    //     setLocation(loc);
+    //     getValueFromStorage([loc.hostname], (s) => {
+    //       setVideoConfig(Object.assign({}, VideoDefaultControlConfig, s[loc.hostname]||{}));
+    //       setLoaded(true);
+    //     });
+    //   }else{
+    //     setLoaded(true);
+    //     setLocation({
+    //       hostname: 'normal',
+    //     })
+    //   }
+    // });
   }, []);
 
   if (!loaded) {
@@ -36,14 +67,16 @@ function App() {
           name="playSpeed"
           type="number"
           onBlur={(e) => {
-            setVideoConfig({ ...videoConfig, playTime: Number(e.target.value) });
+            setVideoConfig({ ...videoConfig, playSpeed: Number(e.target.value) });
           }}
         />
       </div>
       <div>
         <button
           onClick={() => {
-            setValueFromStorage(videoConfig);
+            if (location) {
+              setValueFromStorage({[location.hostname]: videoConfig});
+            }
           }}
         >
           保存

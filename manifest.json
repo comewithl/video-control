@@ -1,5 +1,5 @@
 {
-  "$schema": "URL_ADDRESS",
+  "$schema": "https://json.schemastore.org/chrome-manifest",
   "manifest_version": 3,
   "name": "video Control",
   "version": "1.0.0",

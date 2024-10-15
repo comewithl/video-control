@@ -1,23 +1,47 @@
-import { StorageMap, VideoDefaultControlConfig } from './types/constant';
+import { VideoDefaultControlConfig, ConfigKey } from './types/constant';
 import { getValueFromStorage } from './utils';
 
 (function () {
   const config = VideoDefaultControlConfig;
+  const configKey = ConfigKey;
   function loadVideoControlConfig(cb: () => void) {
     // 从localStorage中获取配置
-    getValueFromStorage(StorageMap.videoConfig, (value) => {
-      Object.assign(config, value);
+    getValueFromStorage([configKey], (value) => {
+      Object.assign(config, value[configKey]);
       cb();
     });
   }
 
   chrome.storage.onChanged.addListener(function (changes) {
     for (const [key, { newValue }] of Object.entries(changes)) {
-      if (StorageMap.videoConfig.includes(key)) {
-        Object.assign(config, {[key]:newValue});
+      if (configKey === key) {
+        Object.assign(config, newValue || {});
       }
     }
   })
+
+  // chrome.runtime.onMessage.addListener((message, _sender, sendResponse) => {
+  //   if (message.type === 'getLocation') {
+  //     chrome.tabs.query({ active: true, currentWindow: true }, (tabs) => {
+  //       const tab = tabs[0];
+  //       if (tab.url) {
+  //         const location = new URL(tab.url);
+  //         console.log('【Video Control】location', location);
+  //         configKey = location.host;
+  //         sendResponse({
+  //           href: location.href,
+  //           host: location.host,
+  //           pathname: location.pathname,
+  //           search: location.search,
+  //           hash: location.hash,
+  //         });
+  //       } else {
+  //         sendResponse(null);
+  //       }
+  //     });
+  //     return true; // 表示异步响应
+  //   }
+  // });
 
   
   loadVideoControlConfig(function () {

@@ -8,3 +8,6 @@ export const VideoDefaultControlConfig: VideoConfig = {
 export const StorageMap = {
   videoConfig: Object.keys(VideoDefaultControlConfig),
 };
+
+
+export const ConfigKey = location.hostname || 'normal';

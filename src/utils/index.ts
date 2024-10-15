@@ -53,8 +53,8 @@ export const getValueFromStorage = <T = { [key: string]: any }>(keys: string[], 
 
 // set chrome缓存
 export const setValueFromStorage = (
-  value: Record<string, string | number>,
-  callback?: (value: Record<string, string | number>) => void,
+  value: Record<string, unknown>,
+  callback?: (value: Record<string,unknown>) => void,
 ) => {
   window.chrome.storage?.local.set(value, function () {
     // eslint-disable-next-line @typescript-eslint/no-unused-expressions
