@@ -76,6 +76,7 @@ import { getValueFromStorage } from './utils';
     const changePlayTime = ()=>{
       if(config.playTime && !Number.isNaN(video.duration) && video.duration!=Infinity && video.duration>config.playTime){
         video.currentTime = config.playTime;
+        video.play();
       }
     }
     changePlayTime();
